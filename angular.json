@@ -3,6 +3,52 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
+    "first-lib": {
+      "projectType": "library",
+      "root": "libs/first-lib",
+      "sourceRoot": "libs/first-lib/src",
+      "prefix": "test-project",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:ng-packagr-lite",
+          "outputs": [
+            "dist/libs/first-lib"
+          ],
+          "options": {
+            "project": "libs/first-lib/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/first-lib/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "libs/first-lib/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/first-lib"
+          ],
+          "options": {
+            "jestConfig": "libs/first-lib/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/first-lib/src/**/*.ts",
+              "libs/first-lib/src/**/*.html"
+            ]
+          }
+        }
+      },
+      "tags": []
+    },
     "test-project": {
       "projectType": "application",
       "schematics": {
@@ -24,7 +70,7 @@
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
-            "tsConfig": "tsconfig.app.json",
+            "tsConfig": "tsconfig.base.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
@@ -106,48 +152,39 @@
         }
       }
     },
-    "first-lib": {
-      "projectType": "library",
-      "root": "libs/first-lib",
-      "sourceRoot": "libs/first-lib/src",
-      "prefix": "test-project",
+    "test-project-e2e": {
+      "root": "apps/test-project-e2e",
+      "sourceRoot": "apps/test-project-e2e/src",
+      "projectType": "application",
       "architect": {
-        "build": {
-          "builder": "@nrwl/angular:ng-packagr-lite",
-          "outputs": ["dist/libs/first-lib"],
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
           "options": {
-            "project": "libs/first-lib/ng-package.json"
+            "cypressConfig": "apps/test-project-e2e/cypress.json",
+            "devServerTarget": "test-project:serve:development"
           },
           "configurations": {
             "production": {
-              "tsConfig": "libs/first-lib/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "libs/first-lib/tsconfig.lib.json"
+              "devServerTarget": "test-project:serve:production"
             }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/first-lib"],
-          "options": {
-            "jestConfig": "libs/first-lib/jest.config.js",
-            "passWithNoTests": true
           }
         },
         "lint": {
           "builder": "@nrwl/linter:eslint",
+          "outputs": [
+            "{options.outputFile}"
+          ],
           "options": {
             "lintFilePatterns": [
-              "libs/first-lib/src/**/*.ts",
-              "libs/first-lib/src/**/*.html"
+              "apps/test-project-e2e/**/*.{js,ts}"
             ]
           }
         }
       },
-      "tags": []
+      "tags": [],
+      "implicitDependencies": [
+        "test-project"
+      ]
     }
-  },
-  "defaultProject": "test-project"
+  }
 }
